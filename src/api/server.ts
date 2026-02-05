@@ -3,6 +3,7 @@
 // ============================================================
 
 import express, { Request, Response, NextFunction } from 'express';
+import path from 'path';
 import { config } from '../config';
 import { x402PaymentMiddleware } from './x402-middleware';
 import { createRoutes } from './routes';
@@ -52,10 +53,19 @@ export function createServer(
   // x402 payment middleware
   app.use(x402PaymentMiddleware());
 
+  // ---- Dashboard (static files) ----
+  // Serve the dashboard at root — resolve from source or dist location
+  const dashboardDir = path.resolve(__dirname, '..', 'dashboard');
+  const dashboardDirSrc = path.resolve(__dirname, '..', '..', 'src', 'dashboard');
+  // Try source dir first (dev), fall back to relative to compiled output
+  const fs = require('fs');
+  const serveDashDir = fs.existsSync(dashboardDirSrc) ? dashboardDirSrc : dashboardDir;
+  app.use(express.static(serveDashDir));
+
   // ---- Routes ----
 
-  // Root — API info
-  app.get('/', (_req: Request, res: Response) => {
+  // API info (moved from / to /api/info so dashboard can serve at root)
+  app.get('/api/info', (_req: Request, res: Response) => {
     res.json({
       name: 'AirdropAlpha',
       version: '0.2.0',
@@ -88,6 +98,47 @@ export function createServer(
         scanning: 'Real on-chain data + heuristic analysis',
       },
     });
+  });
+
+  // Agent info endpoint (for dashboard)
+  app.get('/api/agent/info', (_req: Request, res: Response) => {
+    res.json({
+      success: true,
+      data: {
+        name: 'AirdropAlpha',
+        version: '0.2.0',
+        description: 'AI-powered Solana airdrop intelligence with real on-chain data, safety scanning, and auto-execution',
+        phase: 'Phase 2 — Real Solana Data Integration',
+        demoMode: config.demoMode,
+        protocols: ['Jupiter', 'Marinade', 'Drift', 'Jito', 'Tensor', 'Parcl'],
+        payment: {
+          protocol: 'x402',
+          currency: 'USDC',
+          network: 'solana',
+        },
+      },
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  // Safety scanner endpoint (for dashboard — analyze any address)
+  app.get('/api/safety/:address', async (req: Request, res: Response) => {
+    const address = String(req.params.address);
+    try {
+      const report = await safety.analyze(address);
+      res.json({
+        success: true,
+        data: report,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Safety analysis failed',
+        details: (error as Error).message,
+        timestamp: new Date().toISOString(),
+      });
+    }
   });
 
   // API routes
