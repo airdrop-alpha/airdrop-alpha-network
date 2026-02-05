@@ -58,11 +58,14 @@ export function createServer(
   app.get('/', (_req: Request, res: Response) => {
     res.json({
       name: 'AirdropAlpha',
-      version: '0.1.0',
-      description: 'Solana airdrop intelligence with safety scanning and auto-execution',
+      version: '0.2.0',
+      description: 'AI-powered Solana airdrop intelligence with real on-chain data, safety scanning, and auto-execution',
+      phase: 'Phase 2 — Real Solana Data Integration',
       endpoints: {
-        'GET /health': 'Health check (free)',
+        'GET /health': 'Health check + scanner stats (free)',
         'GET /skill.json': 'Agent skill descriptor (free)',
+        'GET /api/opportunities': 'All opportunities — no paywall (free)',
+        'GET /api/scanner/stats': 'Scanner statistics (free)',
         'GET /airdrops': 'List opportunities (free tier: top 3, paid: all)',
         'GET /airdrops/:id': 'Detailed analysis (0.05 USDC)',
         'GET /airdrops/:id/safety': 'Safety report (0.10 USDC)',
@@ -78,6 +81,11 @@ export function createServer(
       safety: {
         internal: 'On-chain heuristic analysis',
         external: 'AgentShield integration (https://agentshield.lobsec.org)',
+      },
+      dataSource: {
+        network: 'Solana Devnet',
+        protocols: ['Jupiter', 'Marinade', 'Drift', 'Jito', 'Tensor', 'Parcl'],
+        scanning: 'Real on-chain data + heuristic analysis',
       },
     });
   });

@@ -269,6 +269,32 @@ export interface SkillParameter {
 }
 
 // ============================================================
+// Scanner Types
+// ============================================================
+
+/** Source of an airdrop signal */
+export enum SignalSource {
+  ON_CHAIN_MINT = 'ON_CHAIN_MINT',
+  PROTOCOL_ACTIVITY = 'PROTOCOL_ACTIVITY',
+  STAKING_REWARD = 'STAKING_REWARD',
+  GOVERNANCE = 'GOVERNANCE',
+  TVL_CHANGE = 'TVL_CHANGE',
+  HEURISTIC = 'HEURISTIC',
+  DEMO = 'DEMO',
+}
+
+/** Protocol-specific scanner result */
+export interface ProtocolScanResult {
+  protocol: string;
+  programId: string;
+  signalType: SignalSource;
+  confidence: number;
+  details: string;
+  tokenMint: string | null;
+  discoveredAt: string;
+}
+
+// ============================================================
 // Config
 // ============================================================
 
@@ -282,4 +308,5 @@ export interface AppConfig {
   usdcMint: string;
   executorPrivateKey: string | null;
   nodeEnv: string;
+  demoMode: boolean;
 }

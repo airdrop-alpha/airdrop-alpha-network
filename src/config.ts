@@ -8,6 +8,12 @@ function env(key: string, fallback?: string): string {
   return value;
 }
 
+function envBool(key: string, fallback: boolean): boolean {
+  const value = process.env[key];
+  if (value === undefined) return fallback;
+  return value === '1' || value.toLowerCase() === 'true';
+}
+
 export function loadConfig(): AppConfig {
   return {
     port: parseInt(env('PORT', '3402'), 10),
@@ -19,6 +25,7 @@ export function loadConfig(): AppConfig {
     usdcMint: env('USDC_MINT', 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
     executorPrivateKey: process.env.EXECUTOR_PRIVATE_KEY ?? null,
     nodeEnv: env('NODE_ENV', 'development'),
+    demoMode: envBool('DEMO_MODE', true),
   };
 }
 

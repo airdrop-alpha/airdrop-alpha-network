@@ -1,6 +1,6 @@
 {
   "name": "airdrop-alpha-network",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "AI-powered Solana airdrop intelligence with safety scanning and auto-execution, monetized via x402 micropayments",
   "main": "dist/index.js",
   "scripts": {

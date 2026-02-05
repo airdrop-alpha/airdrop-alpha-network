@@ -26,18 +26,21 @@ export function createRoutes(
 
   // ---- Health Check ----
   router.get('/health', (_req: Request, res: Response) => {
+    const stats = scanner.getStats();
     const response: ApiResponse<{
       status: string;
       version: string;
       opportunities: number;
+      scanner: typeof stats;
       executorReady: boolean;
       uptime: number;
     }> = {
       success: true,
       data: {
         status: 'healthy',
-        version: '0.1.0',
+        version: '0.2.0',
         opportunities: scanner.getOpportunities().length,
+        scanner: stats,
         executorReady: executor.isReady(),
         uptime: process.uptime(),
       },
@@ -51,7 +54,63 @@ export function createRoutes(
     res.json(generateSkillDescriptor());
   });
 
-  // ---- List Airdrops ----
+  // ---- Convenience alias: /api/opportunities ----
+  router.get('/api/opportunities', (req: Request, res: Response) => {
+    const limit = Math.min(parseInt(String(req.query.limit ?? '50')), 100);
+    const offset = parseInt(String(req.query.offset ?? '0'));
+    const minSafety = parseInt(String(req.query.minSafety ?? '0'));
+    const statusFilter = req.query.status ? String(req.query.status) : undefined;
+    const protocol = req.query.protocol ? String(req.query.protocol) : undefined;
+
+    let opportunities = scanner.getOpportunities();
+
+    // Apply filters
+    if (minSafety > 0) {
+      opportunities = opportunities.filter(o => o.safetyScore >= minSafety);
+    }
+
+    if (statusFilter) {
+      const statuses = statusFilter.split(',').map(s => s.trim().toUpperCase());
+      opportunities = opportunities.filter(o => statuses.includes(o.status));
+    }
+
+    if (protocol) {
+      const protocolLC = protocol.toLowerCase();
+      opportunities = opportunities.filter(o =>
+        o.sourceProtocol.toLowerCase().includes(protocolLC),
+      );
+    }
+
+    // Exclude SCAM by default
+    if (!statusFilter) {
+      opportunities = opportunities.filter(o => o.status !== AirdropStatus.SCAM);
+    }
+
+    const total = opportunities.length;
+    opportunities = opportunities.slice(offset, offset + limit);
+
+    const response: PaginatedResponse<AirdropOpportunity> = {
+      success: true,
+      data: opportunities,
+      total,
+      offset,
+      limit,
+      timestamp: new Date().toISOString(),
+    };
+
+    res.json(response);
+  });
+
+  // ---- Scanner Stats ----
+  router.get('/api/scanner/stats', (_req: Request, res: Response) => {
+    res.json({
+      success: true,
+      data: scanner.getStats(),
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  // ---- List Airdrops (x402-gated) ----
   router.get('/airdrops', (req: Request, res: Response) => {
     const isPaid = (req as any).x402?.paid === true;
 

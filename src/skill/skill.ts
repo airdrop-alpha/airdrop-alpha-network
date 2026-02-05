@@ -14,10 +14,11 @@ export function generateSkillDescriptor(): SkillDescriptor {
   return {
     name: 'AirdropAlpha',
     description:
-      'Solana airdrop intelligence service with AI-powered discovery, ' +
+      'Solana airdrop intelligence service with real on-chain data discovery, ' +
+      'protocol-specific scanning (Jupiter, Marinade, Drift, Jito), ' +
       'dual-layer safety scanning (internal heuristics + AgentShield), ' +
       'and automated claim execution. Monetized via x402 micropayments (USDC on Solana).',
-    version: '0.1.0',
+    version: '0.2.0',
     author: 'AirdropAlpha Team',
     endpoints: [
       {
@@ -117,6 +118,9 @@ export function generateSkillDescriptor(): SkillDescriptor {
     },
     capabilities: [
       'airdrop-discovery',
+      'real-onchain-data',
+      'protocol-specific-scanning',
+      'heuristic-analysis',
       'safety-scanning',
       'agentshield-integration',
       'auto-execution',
