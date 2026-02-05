@@ -7,11 +7,27 @@ import { AgentShieldClient } from './agentshield-client';
 import {
   SafetyReport,
   SafetyFlag,
+  SafetyCategory,
   RiskLevel,
 } from '../types';
 
 const INTERNAL_WEIGHT = 0.6;
 const AGENTSHIELD_WEIGHT = 0.4;
+
+/**
+ * Known protocol token mints — these are trusted tokens from established
+ * Solana protocols. On devnet, AgentShield may flag them as VERY_NEW_ACCOUNT
+ * or similar false positives. We give them a score boost to avoid misclassification.
+ */
+const KNOWN_PROTOCOL_TOKENS: Record<string, string> = {
+  'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN': 'Jupiter (JUP)',
+  'MNDEFzGvMt87ueuHnXBQ1gMNTSToog1Chn3YWDuQKMN': 'Marinade (MNDE)',
+  'DriFtupJYLTosbwoN8koMbEYSx54aFAVLddWsbksjwg7': 'Drift (DRIFT)',
+  'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL': 'Jito (JTO)',
+  'TNSRxcUxoT9xBG3de7PiJyTDYu7kskLqcpddxnEJAS6': 'Tensor (TNSR)',
+};
+
+const KNOWN_PROTOCOL_BOOST = 15;
 
 export class SafetyModule {
   private internalChecker: InternalChecker;
@@ -60,6 +76,21 @@ export class SafetyModule {
       ...(shield?.flags ?? []),
     ];
 
+    // Known-protocol whitelist: boost score for established protocol tokens
+    // that may be misclassified on devnet (e.g., AgentShield VERY_NEW_ACCOUNT)
+    const knownProtocolName = KNOWN_PROTOCOL_TOKENS[tokenMint];
+    if (knownProtocolName) {
+      combinedScore = Math.min(100, combinedScore + KNOWN_PROTOCOL_BOOST);
+      allFlags.push({
+        category: SafetyCategory.KNOWN_SCAM, // Reuse category for known-protocol info
+        severity: 'info',
+        message: `Known protocol token: ${knownProtocolName} — score boosted by +${KNOWN_PROTOCOL_BOOST}`,
+        details: 'Established protocol tokens receive a safety bonus to offset potential false positives on devnet.',
+      });
+      console.log(`[Safety] Known protocol boost: ${knownProtocolName} +${KNOWN_PROTOCOL_BOOST} → ${combinedScore}`);
+    }
+
+    combinedScore = Math.max(0, Math.min(100, combinedScore));
     const riskLevel = this.scoreToRiskLevel(combinedScore);
 
     const report: SafetyReport = {

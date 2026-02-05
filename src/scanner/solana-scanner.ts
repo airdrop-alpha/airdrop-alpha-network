@@ -59,7 +59,7 @@ const KNOWN_PROTOCOLS: Record<string, ProtocolInfo> = {
   },
   jito: {
     name: 'Jito',
-    programId: 'Jito4APyf642JPZPx3hGc6WWJ8zPKtRbRs4P3kCmMVxe',
+    programId: '4R3gSG8BpU4t19KYj8CfnbtRpnT8gtk4dvTHxVRwc2r7',
     category: 'MEV / Liquid Staking',
     tokenMint: 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL',
     description: 'MEV rewards and JitoSOL yield distributions',
@@ -890,7 +890,7 @@ export class SolanaScanner {
         discoveredAt: new Date(now - 86400000 * 2).toISOString(),
         updatedAt: new Date().toISOString(),
         sourceUrl: 'https://jito.network',
-        programId: 'Jito4APyf642JPZPx3hGc6WWJ8zPKtRbRs4P3kCmMVxe',
+        programId: '4R3gSG8BpU4t19KYj8CfnbtRpnT8gtk4dvTHxVRwc2r7',
       },
       {
         id: uuid(),
@@ -984,7 +984,7 @@ export class SolanaScanner {
         id: uuid(),
         name: 'SolFi Yield Token',
         symbol: 'SOLFI',
-        tokenMint: 'So1fi1111111111111111111111111111111111111',
+        tokenMint: 'So1fi11111111111111111111111111111111111111',
         sourceProtocol: 'SolFi (Unverified)',
         description:
           'New DeFi protocol claiming free token distribution. ' +
@@ -1013,7 +1013,7 @@ export class SolanaScanner {
         id: uuid(),
         name: 'PhantomDrop Mystery Token',
         symbol: 'PHDROP',
-        tokenMint: 'PhDr0p1111111111111111111111111111111111111',
+        tokenMint: 'PhDrop1111111111111111111111111111111111111',
         sourceProtocol: 'Unknown',
         description:
           'Suspicious token appearing in wallets without user action. ' +

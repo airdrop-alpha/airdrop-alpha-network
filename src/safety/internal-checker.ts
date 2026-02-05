@@ -20,8 +20,8 @@ import { config } from '../config';
 /** Known scam addresses (would be a larger DB in production) */
 const KNOWN_SCAM_ADDRESSES = new Set([
   // Example known scam mints — in production this would be fetched from a service
-  'ScAmMiNt1111111111111111111111111111111111111',
-  'RuGPu11111111111111111111111111111111111111111',
+  'ScAmMiNt11111111111111111111111111111111111',
+  'RuGPu11111111111111111111111111111111111111',
 ]);
 
 /** Known legitimate protocol addresses */
@@ -30,7 +30,7 @@ const KNOWN_SAFE_ADDRESSES = new Set([
   'TSWAPaqyCSx2KABk68Shruf4rp7CxcNi8hAsbdwmHbN', // Tensor
   'MarBmsSgKXdrN1egZf5sqe1TMai9K1rChYNDJgjq7aD', // Marinade
   'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH', // Drift
-  'Jito4APyf642JPZPx3hGc6WWJ8zPKtRbRs4P3kCmMVxe', // Jito
+  '4R3gSG8BpU4t19KYj8CfnbtRpnT8gtk4dvTHxVRwc2r7', // Jito Tip Distribution
   'MNDEFzGvMt87ueuHnXBQ1gMNTSToog1Chn3YWDuQKMN', // Marinade MNDE
   'TNSRxcUxoT9xBG3de7PiJyTDYu7kskLqcpddxnEJAS6', // Tensor TNSR
 ]);
