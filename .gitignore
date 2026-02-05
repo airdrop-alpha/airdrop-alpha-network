@@ -6,3 +6,5 @@ dist/
 credentials/
 .DS_Store
 *.log
+on-chain/target/
+on-chain/node_modules/
