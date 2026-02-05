@@ -101,6 +101,213 @@ export function createRoutes(
     res.json(response);
   });
 
+  // ---- Skill Descriptor (convenience alias under /api) ----
+  router.get('/api/skill.json', (_req: Request, res: Response) => {
+    res.json(generateSkillDescriptor());
+  });
+
+  // ---- Agent Info ----
+  router.get('/api/agent/info', (_req: Request, res: Response) => {
+    const stats = scanner.getStats();
+    res.json({
+      success: true,
+      data: {
+        name: 'AirdropAlpha',
+        version: '0.2.0',
+        description: 'AI-powered Solana airdrop intelligence with real on-chain data, safety scanning, and auto-execution',
+        capabilities: [
+          'airdrop-discovery',
+          'real-onchain-data',
+          'protocol-specific-scanning',
+          'safety-scanning',
+          'agentshield-integration',
+          'auto-execution',
+          'risk-scoring',
+          'x402-payments',
+        ],
+        protocols: stats.protocols,
+        totalOpportunities: stats.totalOpportunities,
+        networkAvailable: stats.networkAvailable,
+        payment: {
+          protocol: 'x402',
+          currency: 'USDC',
+          network: 'solana',
+        },
+        uptime: process.uptime(),
+      },
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  // ---- Single Opportunity by ID (convenience) ----
+  router.get('/api/opportunities/:id', (req: Request, res: Response) => {
+    const opportunity = scanner.getOpportunity(String(req.params.id));
+
+    if (!opportunity) {
+      res.status(404).json({
+        success: false,
+        error: 'Airdrop opportunity not found',
+        timestamp: new Date().toISOString(),
+      } as ApiResponse<null>);
+      return;
+    }
+
+    const response: ApiResponse<AirdropOpportunity> = {
+      success: true,
+      data: opportunity,
+      timestamp: new Date().toISOString(),
+    };
+
+    res.json(response);
+  });
+
+  // ---- Safety Analysis by Address/Token Mint ----
+  router.get('/api/safety/:address', async (req: Request, res: Response) => {
+    const address = String(req.params.address);
+
+    try {
+      // Check if it's a known opportunity token mint
+      const opportunities = scanner.getOpportunities();
+      const matchedOpp = opportunities.find(o => o.tokenMint === address || o.id === address);
+
+      const report = await safety.analyze(
+        matchedOpp?.tokenMint ?? address,
+        matchedOpp?.programId ?? null,
+      );
+
+      // Update matched opportunity if found
+      if (matchedOpp) {
+        scanner.updateOpportunity(matchedOpp.id, {
+          safetyReport: report,
+          safetyScore: report.combinedScore,
+          riskLevel: report.riskLevel,
+        });
+      }
+
+      res.json({
+        success: true,
+        data: {
+          address,
+          matchedOpportunity: matchedOpp ? { id: matchedOpp.id, name: matchedOpp.name } : null,
+          report,
+        },
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Safety analysis failed',
+        details: (error as Error).message,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
+  // ---- Execute Airdrop (convenience GET for demo) ----
+  router.get('/api/execute/:id', async (req: Request, res: Response) => {
+    const opportunity = scanner.getOpportunity(String(req.params.id));
+
+    if (!opportunity) {
+      res.status(404).json({
+        success: false,
+        error: 'Airdrop opportunity not found',
+        timestamp: new Date().toISOString(),
+      } as ApiResponse<null>);
+      return;
+    }
+
+    if (opportunity.status === AirdropStatus.EXPIRED) {
+      res.status(400).json({
+        success: false,
+        error: 'Airdrop has expired',
+        timestamp: new Date().toISOString(),
+      } as ApiResponse<null>);
+      return;
+    }
+
+    if (opportunity.status === AirdropStatus.SCAM) {
+      res.status(400).json({
+        success: false,
+        error: 'Airdrop flagged as scam — execution blocked',
+        timestamp: new Date().toISOString(),
+      } as ApiResponse<null>);
+      return;
+    }
+
+    try {
+      const result = await executor.executeAirdropClaim(opportunity);
+
+      res.json({
+        success: result.status !== 'FAILED',
+        data: result,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Execution failed',
+        details: (error as Error).message,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
+  // ---- x402 Price Quote ----
+  router.post('/api/x402/quote', (req: Request, res: Response) => {
+    const { endpoint, method } = req.body ?? {};
+
+    const pricing: Record<string, { price: number; description: string }> = {
+      'GET:/airdrops': { price: 0.01, description: 'Full airdrop listings (bypasses free tier limit)' },
+      'GET:/airdrops/:id': { price: 0.05, description: 'Detailed airdrop analysis' },
+      'GET:/airdrops/:id/safety': { price: 0.10, description: 'Comprehensive safety report' },
+      'POST:/airdrops/:id/execute': { price: 1.00, description: 'Auto-execute airdrop claim' },
+    };
+
+    if (endpoint && method) {
+      const key = `${method}:${endpoint}`;
+      const match = pricing[key];
+      if (match) {
+        res.json({
+          success: true,
+          data: {
+            endpoint: key,
+            priceUsdc: match.price,
+            description: match.description,
+            currency: 'USDC',
+            network: 'solana',
+            protocol: 'x402',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+    }
+
+    // Return full pricing table
+    res.json({
+      success: true,
+      data: {
+        endpoints: Object.entries(pricing).map(([key, val]) => ({
+          endpoint: key,
+          priceUsdc: val.price,
+          description: val.description,
+        })),
+        currency: 'USDC',
+        network: 'solana',
+        protocol: 'x402',
+        freeEndpoints: [
+          'GET /health',
+          'GET /skill.json',
+          'GET /api/skill.json',
+          'GET /api/opportunities',
+          'GET /api/agent/info',
+          'GET /api/safety/:address',
+        ],
+      },
+      timestamp: new Date().toISOString(),
+    });
+  });
+
   // ---- Scanner Stats ----
   router.get('/api/scanner/stats', (_req: Request, res: Response) => {
     res.json({

@@ -22,18 +22,30 @@ export function generateSkillDescriptor(): SkillDescriptor {
     author: 'AirdropAlpha Team',
     endpoints: [
       {
-        path: '/airdrops',
+        path: '/api/skill.json',
+        method: 'GET',
+        description: 'Agent skill descriptor — discover capabilities, endpoints, and pricing.',
+        priceUsdc: 0,
+      },
+      {
+        path: '/api/agent/info',
+        method: 'GET',
+        description: 'Agent metadata — name, version, capabilities, supported protocols, and status.',
+        priceUsdc: 0,
+      },
+      {
+        path: '/api/opportunities',
         method: 'GET',
         description:
-          'List current airdrop opportunities with risk scores. ' +
-          'Free tier returns top 3 opportunities. Paid tier returns all.',
-        priceUsdc: 0.01,
+          'List all current airdrop opportunities with risk scores and safety analysis. ' +
+          'Supports filtering by minSafety, status, and protocol. Free and open.',
+        priceUsdc: 0,
         parameters: [
           {
             name: 'limit',
             type: 'number',
             required: false,
-            description: 'Maximum number of results (default: 20)',
+            description: 'Maximum number of results (default: 50, max: 100)',
           },
           {
             name: 'offset',
@@ -53,21 +65,104 @@ export function generateSkillDescriptor(): SkillDescriptor {
             required: false,
             description: 'Filter by status: DISCOVERED, VERIFIED, ACTIVE, CLAIMABLE',
           },
+          {
+            name: 'protocol',
+            type: 'string',
+            required: false,
+            description: 'Filter by source protocol name',
+          },
         ],
       },
       {
-        path: '/airdrops/:id',
+        path: '/api/opportunities/:id',
         method: 'GET',
         description:
           'Get detailed analysis of a specific airdrop opportunity, ' +
           'including eligibility criteria, value estimation, and full metadata.',
-        priceUsdc: 0.05,
+        priceUsdc: 0,
         parameters: [
           {
             name: 'id',
             type: 'string',
             required: true,
             description: 'Airdrop opportunity ID',
+          },
+        ],
+      },
+      {
+        path: '/api/safety/:address',
+        method: 'GET',
+        description:
+          'Run comprehensive safety analysis on a Solana address or token mint. ' +
+          'Returns internal heuristic score, AgentShield validation, combined risk assessment, and detailed flags.',
+        priceUsdc: 0,
+        parameters: [
+          {
+            name: 'address',
+            type: 'string',
+            required: true,
+            description: 'Solana address or token mint to analyze',
+          },
+        ],
+      },
+      {
+        path: '/api/execute/:id',
+        method: 'GET',
+        description:
+          'Execute an airdrop claim. Builds the claim transaction, ' +
+          'runs AgentShield pre-flight check, simulates, then submits. ' +
+          'Only available for opportunities with safety score >= 30.',
+        priceUsdc: 0,
+        parameters: [
+          {
+            name: 'id',
+            type: 'string',
+            required: true,
+            description: 'Airdrop opportunity ID',
+          },
+        ],
+      },
+      {
+        path: '/api/x402/quote',
+        method: 'POST',
+        description:
+          'Get x402 micropayment pricing for premium endpoints. ' +
+          'Returns price quotes in USDC on Solana.',
+        priceUsdc: 0,
+        parameters: [
+          {
+            name: 'endpoint',
+            type: 'string',
+            required: false,
+            description: 'Specific endpoint path to get quote for',
+          },
+          {
+            name: 'method',
+            type: 'string',
+            required: false,
+            description: 'HTTP method (GET/POST)',
+          },
+        ],
+      },
+      {
+        path: '/airdrops',
+        method: 'GET',
+        description:
+          'List opportunities with x402 paywall. ' +
+          'Free tier returns top 3. Paid tier (0.01 USDC) returns all.',
+        priceUsdc: 0.01,
+        parameters: [
+          {
+            name: 'limit',
+            type: 'number',
+            required: false,
+            description: 'Maximum number of results (default: 20)',
+          },
+          {
+            name: 'minSafety',
+            type: 'number',
+            required: false,
+            description: 'Minimum safety score filter (0-100)',
           },
         ],
       },
@@ -75,34 +170,15 @@ export function generateSkillDescriptor(): SkillDescriptor {
         path: '/airdrops/:id/safety',
         method: 'GET',
         description:
-          'Get comprehensive safety report including internal heuristic analysis ' +
-          'and AgentShield external validation. Returns detailed flags and risk assessment.',
+          'Get comprehensive safety report (x402 gated, 0.10 USDC).',
         priceUsdc: 0.10,
-        parameters: [
-          {
-            name: 'id',
-            type: 'string',
-            required: true,
-            description: 'Airdrop opportunity ID',
-          },
-        ],
       },
       {
         path: '/airdrops/:id/execute',
         method: 'POST',
         description:
-          'Auto-execute an airdrop claim. Builds the claim transaction, ' +
-          'runs AgentShield pre-flight check, simulates, then submits. ' +
-          'Only available for opportunities with safety score >= 30.',
+          'Auto-execute airdrop claim via x402 payment (1.00 USDC).',
         priceUsdc: 1.00,
-        parameters: [
-          {
-            name: 'id',
-            type: 'string',
-            required: true,
-            description: 'Airdrop opportunity ID',
-          },
-        ],
       },
       {
         path: '/health',
