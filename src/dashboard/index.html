@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AirdropAlpha — AI-Powered Airdrop Intelligence for Solana</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Demo Mode Banner -->
+  <div id="demo-banner" class="demo-banner hidden">
+    <span class="demo-pulse"></span>
+    <span>🧪 DEMO MODE — Showing simulated data from Solana devnet</span>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="nav-logo">🪂</span>
+      <span class="nav-title">AirdropAlpha</span>
+    </div>
+    <div class="nav-links">
+      <a href="#opportunities">Opportunities</a>
+      <a href="#safety">Safety Scanner</a>
+      <a href="#agent">Agent Stats</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#architecture">Architecture</a>
+    </div>
+    <div class="nav-status">
+      <span id="status-dot" class="status-dot"></span>
+      <span id="status-text" class="status-text">Connecting...</span>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Built for Solana Agent Hackathon · Colosseum</div>
+      <h1 class="hero-title">
+        <span class="hero-icon">🪂</span>
+        AirdropAlpha
+      </h1>
+      <p class="hero-subtitle">AI-Powered Airdrop Intelligence for Solana</p>
+      <p class="hero-desc">
+        Continuous on-chain scanning · Dual-layer safety analysis · Auto-execution · x402 micropayments
+      </p>
+      <div class="hero-actions">
+        <a href="#opportunities" class="btn btn-primary">View Live Opportunities</a>
+        <a href="#safety" class="btn btn-secondary">Scan an Address</a>
+      </div>
+      <div class="hero-stats" id="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-value" id="stat-opportunities">—</span>
+          <span class="hero-stat-label">Opportunities</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value" id="stat-protocols">6</span>
+          <span class="hero-stat-label">Protocols</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value" id="stat-scans">—</span>
+          <span class="hero-stat-label">Scans Run</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value" id="stat-uptime">—</span>
+          <span class="hero-stat-label">Uptime</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Opportunities -->
+  <section class="section" id="opportunities">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">📡</span> Live Opportunities</h2>
+        <p class="section-desc">Real-time airdrop intelligence from Solana devnet</p>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="jupiter">Jupiter</button>
+        <button class="filter-btn" data-filter="marinade">Marinade</button>
+        <button class="filter-btn" data-filter="drift">Drift</button>
+        <button class="filter-btn" data-filter="jito">Jito</button>
+        <button class="filter-btn" data-filter="tensor">Tensor</button>
+      </div>
+      <div id="opportunities-grid" class="opportunities-grid">
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Scanning blockchain...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Safety Scanner -->
+  <section class="section section-alt" id="safety">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">🛡️</span> Safety Scanner</h2>
+        <p class="section-desc">Dual-layer security analysis: internal heuristics + AgentShield</p>
+      </div>
+      <div class="safety-scanner">
+        <div class="scanner-input-group">
+          <input
+            type="text"
+            id="safety-address"
+            class="scanner-input"
+            placeholder="Enter Solana token mint address..."
+            spellcheck="false"
+          >
+          <button id="scan-btn" class="btn btn-primary" onclick="window.app.scanAddress()">
+            Scan Address
+          </button>
+        </div>
+        <div class="scanner-quick-links">
+          <span>Try:</span>
+          <button class="quick-link" onclick="window.app.quickScan('JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN')">JUP</button>
+          <button class="quick-link" onclick="window.app.quickScan('MNDEFzGvMt87ueuHnXBQ1gMNTSToog1Chn3YWDuQKMN')">MNDE</button>
+          <button class="quick-link" onclick="window.app.quickScan('jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL')">JTO</button>
+        </div>
+        <div id="safety-result" class="safety-result hidden"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Agent Stats -->
+  <section class="section" id="agent">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">🤖</span> Agent Stats</h2>
+        <p class="section-desc">Real-time agent metadata and system health</p>
+      </div>
+      <div id="agent-stats" class="agent-stats-grid">
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Loading agent info...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- x402 Monetization -->
+  <section class="section section-alt" id="pricing">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">💰</span> x402 Monetization</h2>
+        <p class="section-desc">Pay-per-request API using USDC micropayments on Solana</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="pricing-tier">Free Tier</div>
+          <div class="pricing-price">$0</div>
+          <div class="pricing-desc">No payment required</div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Top 3 opportunities (redacted)</li>
+            <li><span class="check">✓</span> API info & health check</li>
+            <li><span class="check">✓</span> Skill descriptor (skill.json)</li>
+            <li><span class="check">✓</span> Full opportunity list (/api/opportunities)</li>
+            <li><span class="check">✓</span> Scanner statistics</li>
+            <li class="disabled"><span class="cross">✗</span> Detailed analysis</li>
+            <li class="disabled"><span class="cross">✗</span> Safety reports</li>
+            <li class="disabled"><span class="cross">✗</span> Auto-execution</li>
+          </ul>
+        </div>
+        <div class="pricing-card pricing-featured">
+          <div class="pricing-badge">x402</div>
+          <div class="pricing-tier">Paid Tier</div>
+          <div class="pricing-price">USDC Micropayments</div>
+          <div class="pricing-desc">Pay only for what you use</div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Everything in Free</li>
+            <li><span class="price-tag">0.01 USDC</span> Full opportunity list</li>
+            <li><span class="price-tag">0.05 USDC</span> Detailed analysis per airdrop</li>
+            <li><span class="price-tag">0.10 USDC</span> Full safety report</li>
+            <li><span class="price-tag">1.00 USDC</span> Auto-execute airdrop claim</li>
+            <li><span class="check">✓</span> Execution status tracking</li>
+          </ul>
+          <div class="pricing-footer">
+            <code>X-Payment</code> header with USDC payment proof
+          </div>
+        </div>
+        <div class="pricing-card">
+          <div class="pricing-tier">For AI Agents</div>
+          <div class="pricing-price">Agent-to-Agent</div>
+          <div class="pricing-desc">Discoverable via skill.json</div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> skill.json endpoint</li>
+            <li><span class="check">✓</span> Machine-readable API</li>
+            <li><span class="check">✓</span> x402 payment protocol</li>
+            <li><span class="check">✓</span> Auto-discovery for AI agents</li>
+            <li><span class="check">✓</span> OpenAPI-compatible responses</li>
+            <li><span class="check">✓</span> Structured JSON everywhere</li>
+          </ul>
+        </div>
+      </div>
+      <div class="x402-flow">
+        <h3>How x402 Works</h3>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-number">1</div>
+            <div class="flow-label">Request</div>
+            <div class="flow-desc">Client requests paid endpoint</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-number">2</div>
+            <div class="flow-label">402 Response</div>
+            <div class="flow-desc">Server returns payment details</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-number">3</div>
+            <div class="flow-label">Pay USDC</div>
+            <div class="flow-desc">Client sends USDC on Solana</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-number">4</div>
+            <div class="flow-label">Access</div>
+            <div class="flow-desc">Re-request with X-Payment header</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture -->
+  <section class="section" id="architecture">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">🏗️</span> Architecture</h2>
+        <p class="section-desc">How AirdropAlpha discovers, validates, and monetizes airdrop intelligence</p>
+      </div>
+      <div class="arch-diagram">
+        <div class="arch-row">
+          <div class="arch-box arch-main">
+            <div class="arch-box-title">AirdropAlpha v0.2.0</div>
+            <div class="arch-box-sub">Real Solana Data Integration</div>
+          </div>
+        </div>
+        <div class="arch-connectors triple">
+          <div class="arch-line"></div>
+          <div class="arch-line"></div>
+          <div class="arch-line"></div>
+        </div>
+        <div class="arch-row arch-row-3">
+          <div class="arch-box arch-scanner">
+            <div class="arch-box-title">🔍 Airdrop Scanner</div>
+            <ul class="arch-list">
+              <li>On-Chain Scanning</li>
+              <li>Protocol-Specific (JUP, MNDE, DRIFT, JTO, TNSR)</li>
+              <li>Heuristic Analysis</li>
+            </ul>
+          </div>
+          <div class="arch-box arch-safety">
+            <div class="arch-box-title">🛡️ Safety Layer</div>
+            <ul class="arch-list">
+              <li>Internal Checker (token conc., mint/freeze auth, age)</li>
+              <li>AgentShield API (external validation)</li>
+              <li>Score = 0.6×Internal + 0.4×Shield</li>
+            </ul>
+          </div>
+          <div class="arch-box arch-exec">
+            <div class="arch-box-title">⚡ Auto-Execution</div>
+            <ul class="arch-list">
+              <li>Jupiter DEX Integration</li>
+              <li>Transaction Simulation</li>
+              <li>Pre-flight Safety Checks</li>
+            </ul>
+          </div>
+        </div>
+        <div class="arch-connectors single">
+          <div class="arch-line"></div>
+        </div>
+        <div class="arch-row">
+          <div class="arch-box arch-api">
+            <div class="arch-box-title">🌐 Intelligence API (Express.js)</div>
+            <div class="arch-endpoints">
+              <div class="arch-endpoint-group">
+                <span class="arch-label free">FREE</span>
+                <code>GET /api/opportunities</code>
+                <code>GET /health</code>
+                <code>GET /skill.json</code>
+              </div>
+              <div class="arch-endpoint-group">
+                <span class="arch-label paid">x402</span>
+                <code>GET /airdrops/:id</code>
+                <code>GET /airdrops/:id/safety</code>
+                <code>POST /airdrops/:id/execute</code>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="arch-connectors single">
+          <div class="arch-line"></div>
+        </div>
+        <div class="arch-row">
+          <div class="arch-box arch-skill">
+            <div class="arch-box-title">🤖 skill.json — Agent-to-Agent Interop (x402)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span>🪂</span> AirdropAlpha
+          <span class="footer-version" id="footer-version">v0.2.0</span>
+        </div>
+        <div class="footer-links">
+          <a href="/skill.json" target="_blank">skill.json</a>
+          <a href="/health" target="_blank">Health</a>
+          <a href="/api/opportunities" target="_blank">API</a>
+          <a href="https://www.x402.org/" target="_blank" rel="noopener">x402 Protocol</a>
+          <a href="https://www.colosseum.org/" target="_blank" rel="noopener">Colosseum</a>
+        </div>
+        <div class="footer-copy">
+          Built with 🪂 for the Solana Agent Hackathon
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
