@@ -4,7 +4,7 @@
 
 **Built for the [Solana Agent Hackathon](https://www.colosseum.org/) (Colosseum)**
 
-🔗 **[Live Demo](https://advantage-nottingham-survive-manufacturers.trycloudflare.com)** | 📺 **[Demo Video](https://github.com/airdrop-alpha/airdrop-alpha-network#demo)** | 🏆 **[Colosseum Project](https://colosseum.com/agent-hackathon/projects/airdropalpha)**
+🔗 **[Live Demo](https://airdrop-alpha.github.io/airdrop-alpha-network)** | 📺 **[Demo Video](https://github.com/airdrop-alpha/airdrop-alpha-network#demo)** | 🏆 **[Colosseum Project](https://colosseum.com/agent-hackathon/projects/airdropalpha)**
 
 ---
 
